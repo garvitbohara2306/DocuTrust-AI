@@ -218,3 +218,32 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# DocuTrust AI - Security and generated files
+
+# Environment secrets
+.env.*
+!.env.example
+
+# Virtual environments
+test-env/
+.venv/
+
+# AI model weights
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+
+# Raw private documents
+data/raw/*
+!data/raw/.gitkeep
+
+# Generated outputs
+outputs/*
+!outputs/.gitkeep
+
+# Model checkpoints and caches
+checkpoints/
+wandb/
+.cache/
