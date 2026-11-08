@@ -1,0 +1,17 @@
+{
+  "total_questions": 50,
+  "successful_responses": 50,
+  "failed_responses": 0,
+  "average_expected_page_recall": 0.844,
+  "answerability_accuracy": 0.72,
+  "answerable_non_abstentions": 18,
+  "answerable_total": 30,
+  "correct_unanswerable_abstentions": 18,
+  "unanswerable_total": 20,
+  "citation_consistency": "20/20",
+  "verified_non_abstained_answers": 20,
+  "elapsed_seconds": 575.9,
+  "model": "aya-expanse:8b",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "top_k": 4
+}

@@ -1,0 +1,223 @@
+﻿id,question,is_answerable,expected_pages,retrieved_pages,page_recall,answer,predicted_abstention,citation_valid,cited_pages,error
+DOC002_A01,What policy documents are mandatory for Indian government websites according to the preface?,True,7,"4,7,42,68",1.0,"According to the preface of the provided document, the mandatory policy documents for Indian government websites are:
+
+**Web Content Accessibility Guidelines (WCAG) 2.0** [Page 7 | DOC002_P7_C1]",False,True,7,
+DOC002_A02,What percentage of documents were found to be accessible during the research?,True,7,"5,6,7,50",1.0,"Based on the provided passages, the document states that only **5-10%** of documents on Indian Government websites are found to be accessible [Page 7 | DOC002_P7_C1].",False,True,7,
+DOC002_A03,Name two reasons given for the low availability of accessible documents.,True,7,"6,7",1.0,"Based on the provided passages, two reasons given for the low availability of accessible documents are:
+
+1. **Lack of technical knowledge to the user departments** [Page 7, C1]
+2. **Casual approach in publishing of documents** [Page 7, C1]",False,True,7,
+DOC002_A04,Who is the intended audience of the document?,True,10,"4,7,8,23",0.0,"Based on the provided passages, the intended audience of the document is:
+
+[Page 7 | DOC002_P7_C3] ""This document shall serve as our contribution to society and especially to the visual challenged persons who would like to visit Government websites...""
+
+[Page 8 | DOC002_P8_C2] ""Content managers of different website in Government domain may consult this document...""
+
+Therefore, the intended audience is primarily **content managers** and **users of Government websites**, particularly those with visual challenges.",False,True,"7,8",
+DOC002_A05,What prerequisite software skills are listed?,True,10,"4,10,66",1.0,"Based on the provided passages, the prerequisite software skills listed are:
+
+- **MS Word** [Page 10, Page 46]
+- **Libre Office** [Page 10]
+- **Adobe Acrobat Pro** [Page 10, Page 46]
+
+These skills are mentioned as being necessary to make PDF documents accessible and compliant with PDF/UA standards.",False,True,10,
+DOC002_A06,Which software versions did NIC use while preparing the document?,True,10,"2,10,52",1.0,"Based on the provided passages:
+
+- NIC used **MS Word 2010**, **Acrobat 9 Pro**, and **Libre Office 6.4.5.2** [Page 52] for preparing the document.
+- They advise checking for **latest versions of MS Word and Acrobat Pro** for improved accessibility features [Page 10].",False,True,"10,52",
+DOC002_A07,What does WCAG 2.0 cover?,True,10,"6,10,14",1.0,"Based on the provided passages, WCAG 2.0 (Web Content Accessibility Guidelines 2.0) covers **a wide range of recommendations for making web content more accessible** to people with various disabilities, including:
+
+* Blindness and low vision
+* Deafness and hearing loss
+* Learning disabilities
+* Cognitive limitations
+* Limited movement
+* Speech disabilities
+* Photosensitivity
+* Combinations of these disabilities [Page 10, DOC002_P10_C1]
+
+Additionally, adhering to WCAG 2.0 **often makes web content more usable for all users, not just those with disabilities.** [Page 10, DOC002_P10_C1]",False,True,10,
+DOC002_A08,What is an accessible PDF according to section 1.2?,True,14,"14,23,35,50",1.0,"According to section 1.2 of the provided document, an accessible PDF is:
+
+""A PDF document that can be read and accessed by people with disabilities, primarily for the persons with impaired visions. They may use assistive technology to read the file through text-to-speech or a Braille printout of an accessible PDF document."" [Page 14, DOC002_P14_C1]
+
+It further emphasizes that a PDF is considered accessible only if it meets a set of accessibility guidelines, specifically:
+
+- Web Content Accessibility Guidelines (WCAG) 2.0
+- PDF/UA (PDF/Universal Accessibility), formally ISO 14289, an ISO standard for accessible PDF technology. [Page 14, DOC002_P14_C1]",False,True,14,
+DOC002_A09,Which two accessibility standards are listed in section 1.3?,True,14,"14,26,38",1.0,"Based on the supplied passages, the two accessibility standards listed in section 1.3 are:
+
+1. **Web Content Accessibility Guidelines (WCAG) 2.0** [Page 14, Line 3]
+2. **PDF/UA (PDF/Universal Accessibility), formally ISO 14289** [Page 14, Line 4]",False,True,14,
+DOC002_A10,What is a tagged PDF?,True,14,"12,14,18",1.0,"Based on the provided passages, a **tagged PDF** is:
+
+> **A PDF document that includes hidden accessibility mark-ups.** These mark-ups, when properly applied, **optimize the reading experience** for users of **screen readers and other assistive technology (AT)**.  It also allows the document to **adapt its presentation to different screen sizes** for a better user experience on various devices. [Page 12, 18]
+
+Key points highlighted in the passages:
+
+- **Accessibility**: The primary goal of a tagged PDF is to make it accessible to people with disabilities.
+- **Hidden Mark-ups**: These are not visible to the naked eye but are processed by assistive technologies.
+- **Compliance**: A tagged PDF should meet standards like **PDF/UA (PDF/Universal Accessibility)** for true accessibility. [Page 18]",False,True,"12,18",
+DOC002_A11,Why is meticulous tagging important?,True,"12,14","12,14,43,46",1.0,"**Why is meticulous tagging important?**
+
+Meticulous tagging is crucial for several reasons, as outlined in the provided passages:
+
+1. **Optimizing Accessibility for Users with Disabilities:** Properly applied tags help optimize the reading experience for individuals using screen readers and other assistive technologies (AT). This ensures that people with visual impairments or other disabilities can access and navigate the document effectively. [Page 12, 14]
+
+2. **Ensuring Compatibility with Accessibility Standards:** A tagged PDF can meet internationally recognized accessibility standards, such as ISO 14289. This is essential for public documents and websites to be accessible to all users, in line with the Accessible India Campaign (Sugamya Bharat Abhiyan) objectives. [Page 14]
+
+3. **Enhancing Usability on Different Devices:** A properly tagged PDF can re-flow to adapt its presentation to various screen sizes, providing a high-quality experience for users of smart mobile devices. [Page 12]
+
+4. **Improving Document Structure and Repair:** Tools like Adobe Acrobat Pro's Make Accessible Action Wizard, Accessibility Checker, and Touch-up Reading Order Tool facilitate meticulous tagging and help fix reading order and tagging issues, ensuring the document's structural integrity. [Page 43, 46]",False,True,"12,14,43",
+DOC002_A12,What is the purpose of alternate text for images?,True,17,"17,31,41",1.0,"The purpose of alternate text (or 'alt text') for images is **to communicate the content of an image to people who can’t see it** [Page 17, DOC002_P17_C1]. It provides a textual representation of the image, which is read out by screen readers for users who are visually impaired. The alt text should be **succinct, just enough to convey the idea without unnecessary detail** [Page 17, DOC002_P17_C1].",False,True,17,
+DOC002_A13,Do purely decorative images require a description?,True,17,"17,18,20",1.0,"Based on the provided passages, the answer is:
+
+**INSUFFICIENT_EVIDENCE:** While the passages discuss decorative images and alt text, they do not explicitly state whether purely decorative images _always_ require a description. They only mention that decorative images ""do not require a description"" if they contain no informative content [Page 17, C2], but they may still need specific mark-up to skip them for screen readers.",False,True,17,
+DOC002_A14,What makes hyperlink text meaningful for accessibility?,True,"17,19","17,18,19,30",1.0,"Based on the provided passages, hyperlink text becomes meaningful and accessible for the following reasons:
+
+- **Clear and Descriptive**: Hyperlink text should be meaningful, descriptive, and unique, providing enough information to a non-sighted user about the link's destination or purpose [Page 17, 19].
+- **Avoid Ambiguous Terms**: Using terms like ""click here"" does not convey enough information and should be avoided [Page 19].
+- **Customized for Print Material**: For documents intended for print, use a URL shortening service to create a customized and meaningful link name [Page 17].
+- **Best Practices in Authoring Tools**: Most authoring tools allow creators to assign hyperlinks to text and provide a means of adding alternate text to images [Page 17, 18].
+- **Following Accessibility Standards**: Achieving PDF/UA (PDF/Universal Access) compliance is essential, requiring a good knowledge of tools like Acrobat Pro [Page 30].",False,True,"17,19,30",
+DOC002_A15,How should document language be identified?,True,17,"17,18,32",1.0,"Based on the provided passages, here's how document language should be identified:
+
+1. **Document Language Identification**: The language of the entire document must be specified. If there's content in a language different from the default, that should also be mentioned [Page 17, DOC002_P17_C3].
+
+2. **Use Authoring Tools**: Most document authoring tools provide a way to identify the document language as well as the language of specific parts [Page 17, DOC002_P17_C3].
+
+3. **Multilingual Support in Screen Readers**: Leading screen reader software can read content in various languages, including English, Spanish, French, and many others. Ensuring the correct language profile is crucial [Page 17, DOC002_P17_C3].
+
+4. **Specifics for Libre Office**: When creating a document in Libre Office, you should specify the document language, provide text alternatives for images, avoid floating elements, use headings, named styles, and built-in structuring features, among other best practices [Page 32, DOC002_P32_C1].",False,True,"17,32",
+DOC002_A16,How does the document recommend using tables?,True,17,"17,19,20",1.0,"Based on the provided document passages, here's a concise recommendation on using tables:
+
+**Recommendation:**
+
+- **Use tables wisely:** Tables are useful for communicating relationships between data, especially when presented in a matrix of rows and columns.
+- **Keep tables simple:** If a table is complex, divide it into multiple smaller tables with a heading above each.
+- **Identify column and row headers:** Clearly label column and row headers to make data tables accessible to screen reader users.
+- **Avoid using tables for layout:** Authoring tools have other means of controlling layout, so avoid using tables to control the document's structure.
+- **Ensure table accessibility:** Verify that tables have the necessary headers and that there are no skipped heading levels, blank table rows/columns, or missing alt text.",False,False,,
+DOC002_A17,What must an Adobe PDF include to be accessible according to page 18?,True,18,"14,18,34,47",1.0,"According to page 18, to make an Adobe PDF accessible, it **must be a 'tagged' PDF**. This means it **requires an underlying tagged structure** that includes all accessibility features described in the document.
+
+The passage states: 
+""In order for an Adobe PDF document to be accessible, it must be a ‚tagged‛ PDF, with an underlying tagged structure that includes all of the features already described on this page.""",False,False,,
+DOC002_A18,What problem can improper list formatting cause?,True,18,"16,18,20,49",1.0,"**Answer:** Improper list formatting can cause non-sighted users to **find, navigate through, identify the type, and understand the hierarchy of a list** (as stated on [Page 18, DOC002_P18_C2]).
+
+The passage highlights specific issues:
+
+* **Difficulty in list navigation:**  Non-sighted users rely on screen readers to navigate documents. Improper list formatting can make it hard for these tools to understand the list structure.
+* **Misidentification of list type:** Screen readers need to know if a list is bulleted, numbered, or multi-level to announce it correctly.
+* **Confusion regarding list levels:** Multi-level lists require proper formatting to indicate different levels of sub-items. Improper formatting can lead to confusion about the hierarchy.",False,True,18,
+DOC002_A19,Why are skipped heading levels a problem?,True,19,"16,19,49",1.0,"**Why are skipped heading levels a problem?**
+
+Skipped heading levels are a problem because they **make it difficult for non-sighted users to navigate a document** [Page 19, DOC002_P19_C2]. This is due to:
+
+- **Inconsistent logical reading order:** Headings that are out of sequence disrupt the natural flow of information, making it harder for users relying on screen readers to understand the document's structure. [Page 19, DOC002_P19_C2]
+- **Lack of structure:** Without proper heading levels, documents may lack the necessary structure for non-sighted users to quickly navigate to relevant content. [Page 16, DOC002_P16_C2]",False,True,"16,19",
+DOC002_A20,Why should floating objects not be used?,True,19,"12,19,31,32",1.0,"According to the provided passages, floating objects (objects not inline with text) **should not be used** because:
+
+[Page 19 | DOC002_P19_C2] ""Objects, which are not ‘inline’ with text (also called floating objects), cannot be found by a non-sighted user and should not be used.""",False,True,19,
+DOC002_A21,How can a user check accessibility in MS Word 2010?,True,20,"10,12,23,30",0.0,"Based on the provided passages, a user can check accessibility in MS Word 2010 using the following methods:
+
+1. **In-built Checker in MS Word**: MS Word has an in-built accessibility checker that can be used to check the accessibility of a MS Word file itself [Page 12].
+
+2. **Acrobat Pro Full Check Feature**: If the MS Word document is converted to PDF, Acrobat Pro's Full Check feature can be used to check the PDF's accessibility. This feature highlights errors and provides helpful hints for repairing them, such as adding tags, character encodings, and alternate text [Page 23].
+
+3. **Other Acrobat Features**: Other methods in Acrobat include:
+   - Reflow view to check the reading order.
+   - Read Out Loud feature.
+   - Saving the document as accessible text and reading it in a word processor.
+   - Using the Reading Order Tool, Tags, and Content panels to view the structure and reading order of the PDF [Page 30].
+
+It's important to note that while MS Word 2010 can help with accessibility, achieving PDF/UA compliance might require a combination of MS Word and Acrobat Pro, or using more recent versions of these software for direct PDF/UA compliance [Page 30].",False,True,"12,23,30",
+DOC002_A22,How does the document describe exporting a tagged PDF from LibreOffice?,True,34,"12,14,18",0.0,"Based on the provided document passages, exporting a tagged PDF from LibreOffice (an open-source alternative to Microsoft Word) is described as follows:
+
+1. **Authoring in LibreOffice**: The document suggests using LibreOffice (or any open-source tool) to author the source document. It emphasizes adding accessibility features within the authoring application itself.
+
+2. **Checking Accessibility**: Similar to Microsoft Word, LibreOffice has its own in-built accessibility checker. This tool can be used to identify and correct accessibility errors and warnings before exporting to PDF.
+
+3. **Exporting to PDF**: Once the document is properly structured and accessible within LibreOffice, it can be exported to PDF. The document notes that the same process used for making MS Word-generated tagged PDFs accessible can be applied if the native source document is authored in LibreOffice.
+
+4. **Ensuring Compliance**: To ensure the exported PDF is accessible, it should meet accessibility guidelines such as WCAG 2.0 and PDF/UA (PDF/Universal Accessibility) standards. If the LibreOffice version supports it, exporting to PDF/UA can be done to ensure full accessibility compliance.
+
+5. **Using Online Resources**: If online documentation or tools are available, they can be used to fix any remaining errors or warnings to make the PDF/UA compliant.",False,False,,
+DOC002_A23,What is AccessODF used for in LibreOffice?,True,33,"32,33,40",1.0,"Based on the provided passages, AccessODF is used in LibreOffice for:
+
+- **Accessibility Evaluation:** It can be used to check the accessibility of LibreOffice documents, identifying issues like missing text alternatives for images, improper use of headings, and other accessibility problems [Page 33, 32].
+- **Repairing Accessibility Issues:** AccessODF offers repair suggestions and buttons to fix identified accessibility problems automatically or by opening a dialog for manual fixing [Page 33, 32].
+- **Exporting to Tagged PDF:** It facilitates the export of LibreOffice files to tagged PDF, which is a format that includes accessibility metadata [Page 33, 40].",False,True,33,
+DOC002_A24,What is the purpose of Acrobat Pro Full Check?,True,"34,35","12,25,37",0.0,"The purpose of Acrobat Pro Full Check is **to check and repair the accessibility of PDF documents** [Page 12, 25]. It identifies errors and provides helpful hints for fixing them, particularly in cases where:
+
+* The PDF was generated from a source document (like MS Word) that may not be fully accessible or compliant with PDF/UA standards.
+* The native source document is unavailable.
+
+It leverages Acrobat Pro's advanced editing tools, like the Touch-up Object tool and Touch-up Reading Order Feature, to improve accessibility [Page 12, 25].",False,True,12,
+DOC002_A25,What does PAC3 do?,True,26,"12,26,38,40",1.0,"Based on the provided passages, PAC3 (PDF Accessibility Checker 3) is a **shareware tool** used to **check the accessibility of PDF documents**. It:
+
+- **Lists errors** but does not provide **hints to resolve the issues**.
+- Confirms to **PDF/UA standards**, as mentioned by OTG and NIC.
+- Can be used to **identify accessibility issues** in PDFs, even those declared accessible by Acrobat Pro. [Page 38, 26, 40]
+- Requires the user to have a good knowledge of Acrobat Pro or seek online help to fix issues pointed out by PAC3. [Page 40]",False,True,"38,40",
+DOC002_A26,What did PAC3 reveal about a PDF declared accessible by Acrobat 9 Pro?,True,27,"26,27,38,39",1.0,"Based on the provided passages, PAC3 (PDF Accessibility Checker) revealed that a PDF declared accessible by Acrobat 9 Pro **is not PDF/UA compliant**. [Page 39, 27, 26, 38]
+
+The passages state:
+
+* ""It can be seen... that the document, which was declared accessible by Acrobat 9 Pro, is not PDF/UA complaint as per PDF Accessibility Checker (PAC3)."" [Page 39, 27]
+* ""This checker... can be used to identify the accessibility issues."" [Page 26, 38]",False,True,"26,39",
+DOC002_A27,What are the main steps for making a scanned PDF accessible?,True,"41,43,44","12,13,15,41",0.333,"Based on the provided passages, the main steps for making a scanned PDF accessible are:
+
+1. **Performing OCR (Optical Character Recognition)**: Use the ""OCR Text Recognition"" feature in Acrobat Pro (or open-source tools like Tesseract) to convert scanned images of text into actual text.
+
+2. **Adding Tags to the Document**: After OCR, add tags to the document to make it a Tagged PDF. This ensures that assistive technologies can read and interpret the content.
+
+3. **Creating Accessible PDFs from Source Documents**:
+   - For documents created in word processors (like MS Word or Libre Office), save them in a format that preserves accessibility (e.g., using the ""Save as PDF"" option).
+   - Ensure meticulous tagging during the creation process to meet accessibility standards.
+
+4. **Converting Image Scanned PDFs to OCR PDFs**:
+   - Use Imagemagick to convert an image scanned PDF to an image.
+   - Feed the image to Tesseract to generate an OCR-based PDF.
+
+5. **Compliance with Standards**: Ensure the PDF complies with standards such as PDF/UA and WCAG2.0.
+
+6. **Testing and Validation**: Use a PDF Accessibility Checker (like PAC3) to test and validate the accessibility of the document.",False,False,,
+DOC002_A28,What is one limitation of Tesseract mentioned in the document?,True,"13,55","5,13,53,55",1.0,"Based on the provided passages, one limitation of Tesseract mentioned is:
+
+**""Generation of Tagged PDF is a limitation in Tesseract.""** [Page 13, DOC002_P13_C1]",False,True,13,
+DOC002_A29,What image quality advice is given for better Tesseract OCR results?,True,55,"13,53,55",1.0,"Based on the provided passages, the following image quality advice is given for better Tesseract OCR results:
+
+1. **Scale up images**: The text height should be at least 20 pixels.
+2. **Correct rotation and skew**: Any rotation or skew in the image must be corrected, otherwise, no text will be recognized.
+3. **Remove dark borders manually**: Dark borders must be manually removed as they will be misinterpreted as characters.",False,False,,
+DOC002_A30,What did the report observe about OCR of Hindi and bilingual documents using FreeOCR?,True,56,"55,56,57,66",1.0,"Based on the provided passages, the report observed the following about OCR of Hindi and bilingual documents using FreeOCR:
+
+1. **Hindi and English+Hindi Bilingual Documents**: The report states that even with a Hindi-trained data file added, FreeOCR was unable to achieve OCR for Hindi and English+Hindi bilingual documents (Page 56).
+
+2. **Quality Impact**: The quality of the scanned PDF (good or bad) significantly affects the OCR outcome. A good quality scanned PDF with English text resulted in a text file with little distortion, while a bad quality scan resulted in complete distortion (Pages 56, 57).
+
+3. **FreeOCR Performance**: Another instance of FreeOCR was able to OCR a bad and good quality image scanned PDF to a partially distorted and better quality text, respectively (Page 57).
+
+4. **Recommendations**: The report suggests that CDAC (or a similar entity) should provide technology guidelines on the accessibility of documents in Hindi and other regional languages, including bilingual documents, while using Assistive Technologies (Page 66).
+
+5. **Tesseract Performance**: While Tesseract can create searchable PDFs, it does not tag the document for PDF/UA compliance, requiring additional editing and verification with tools like Acrobat Pro and PAC3 (Page 55).",False,False,,
+DOC002_U01,What is the personal mobile number of the author?,False,,"12,14,18,31",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain any personal mobile number for the author.,True,False,,
+DOC002_U02,What is the author's home address?,False,,"4,7,15,18",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain the author's home address.,True,False,,
+DOC002_U03,What is the author's date of birth?,False,,"3,9,15,18",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain the author's date of birth.,True,False,,
+DOC002_U04,What is the exact salary of the author?,False,,"3,18,31,45",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain any information regarding the author's salary.,True,False,,
+DOC002_U05,How many employees currently work at NIC?,False,,"24,42,51,69",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain information about the current number of employees at NIC.,True,False,,
+DOC002_U06,What is the current market price of Adobe Acrobat Pro?,False,,"25,27,37,47",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain the current market price of Adobe Acrobat Pro.,True,False,,
+DOC002_U07,What is the latest Microsoft Word version released in 2026?,False,,"10,15,27,52",,"INSUFFICIENT_EVIDENCE: The supplied passages do not contain information about the latest Microsoft Word version released in 2026. The document mentions Microsoft Word 2010 and discusses the use of the latest versions of MS Word and Acrobat Pro, but does not specify a year or provide details about a 2026 release.",True,False,,
+DOC002_U08,What is the current download URL for PAC3?,False,,"14,26,38,40",,"INSUFFICIENT_EVIDENCE: The supplied passages do not contain the current download URL for PAC3. They only mention that a shareware PDF Accessibility Checker (PAC3) can be downloaded subject to their Licence Agreement, but do not provide a specific URL or link.",True,False,,
+DOC002_U09,How many government PDFs are accessible across India today?,False,,"7,8,13,50",,"INSUFFICIENT_EVIDENCE: The supplied passages do not contain information about the exact number of government PDFs accessible across India today. The passages discuss the importance of accessible PDFs, the current state of accessibility, and a process to create accessible PDFs, but they do not provide a specific count.",True,False,,
+DOC002_U10,What is the total budget allocated to the Accessible India Campaign?,False,,"7,8,13,14",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain any information regarding the total budget allocated to the Accessible India Campaign.,True,False,,
+DOC002_U11,Which company developed the NVDA screen reader?,False,,"16,17,61,63",,"Based on the provided passages, the company that developed the NVDA screen reader is **Nonvisual Desktop Access (NVDA)**. The passages explicitly mention ""Nonvisual Desktop Access(NVDA) Screen Reader 2020.2"" and describe how to download and use it. [Page 16, 17, 63]",False,True,16,
+DOC002_U12,What is the current market share of Tesseract OCR?,False,,"53,55",,"INSUFFICIENT_EVIDENCE: The supplied passages do not contain any information about the current market share of Tesseract OCR. The passages provide details about the Tesseract OCR engine, its capabilities, and its comparison with other OCR tools, but they do not offer any data on its market share.",True,False,,
+DOC002_U13,What is Tesseract's exact accuracy percentage on Hindi documents?,False,,"53,54,55,56",,"INSUFFICIENT_EVIDENCE: The supplied passages do not contain the exact accuracy percentage for Tesseract on Hindi documents. While the document mentions challenges in achieving OCR for Hindi and English+Hindi bilingual documents, it does not provide a specific accuracy percentage.",True,False,,
+DOC002_U14,How many pages are in the latest edition of the GIGW manual?,False,,"10,27,52",,"INSUFFICIENT_EVIDENCE: The supplied passages do not contain information about the number of pages in the latest edition of the GIGW manual. The passages focus on accessibility of PDF documents and software versions used for accessibility, but do not mention the manual's page count.",True,False,,
+DOC002_U15,What is the current legal penalty for publishing an inaccessible PDF?,False,,"2,27,28,39",,"INSUFFICIENT_EVIDENCE: The supplied passages do not contain information about the current legal penalty for publishing an inaccessible PDF. The document discusses the accessibility of PDF documents on Indian Government websites and the tools used to check for compliance, but it does not mention any specific legal penalties.",True,False,,
+DOC002_U16,Which cloud provider hosts the NIC website?,False,,"24,45,51,69",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain information about which cloud provider hosts the NIC website.,True,False,,
+DOC002_U17,What is the author's educational qualification?,False,,"9,10,14,18",,"INSUFFICIENT_EVIDENCE: The supplied passages do not mention the author's educational qualification. The document focuses on providing guidelines and techniques for creating accessible PDF documents, with sections detailing software skills (MS Word, Libre Office, Adobe Acrobat Pro) and accessibility best practices. There is no information about the author's educational background.",True,False,,
+DOC002_U18,When will the next PAC3 release be published?,False,,"26,28,38,40",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain information about the release date of the next PAC3 version.,True,False,,
+DOC002_U19,How many visually impaired people used government PDFs in 2025?,False,,"8,14,35",,INSUFFICIENT_EVIDENCE: The supplied passages do not contain information about the number of visually impaired people who used government PDFs in 2025.,True,False,,
+DOC002_U20,What is the author's personal email address?,False,,"2,7,9,18",,"INSUFFICIENT_EVIDENCE: The supplied passages do not contain the author's personal email address. The document only includes information about the author's role at NIC and their professional and family acknowledgments, but no personal contact details.",True,False,,

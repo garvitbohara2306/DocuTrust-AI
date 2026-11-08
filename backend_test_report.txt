@@ -1,0 +1,28 @@
+DOCUTRUST FINAL BACKEND TEST\n===================================\n[
+  {
+    "question": "What is an accessible PDF according to section 1.2?",
+    "answer": "**Accessible PDF (according to section 1.2):**\n\nAn accessible PDF is a PDF document designed to be readable and usable by individuals with disabilities, particularly those with impaired vision. Users with visual impairments can utilize assistive technology, such as text-to-speech or Braille printers, to access the content. A PDF is considered accessible when it adheres to a set of accessibility guidelines.\n\n**Document Evidence:**\n\n- [Page 14, DOC002_P14_C1] mentions that an accessible PDF is for individuals with impaired vision and can be read using assistive technology.\n- [Page 50, DOC002_P50_C1] discusses the importance of accessibility mark-ups in a tagged PDF to optimize reading for users with visual impairments.\n- [Page 23, DOC002_P23_C2] highlights the use of tools like the Reading Order Tool and tags to view the structure and content of a PDF, aiding users with visual impairments.\n- The document also provides details on various methods to check PDF accessibility, including Reflow View, Read Out Loud, and emulating Braille printer experiences.",
+    "status": "citation_check_passed",
+    "repair_attempted": true,
+    "citations_valid": true,
+    "source_pages": [
+      14,
+      50,
+      23,
+      35
+    ]
+  },
+  {
+    "question": "What is the exact salary of the document author?",
+    "answer": "Based on the provided document evidence, it is INSUFFICIENT_EVIDENCE to determine the exact salary of the document author. The document does not include any information related to the author's compensation.",
+    "status": "unverified",
+    "repair_attempted": true,
+    "citations_valid": false,
+    "source_pages": [
+      7,
+      12,
+      23,
+      69
+    ]
+  }
+]

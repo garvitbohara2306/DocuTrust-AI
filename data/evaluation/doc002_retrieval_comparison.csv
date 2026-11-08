@@ -1,0 +1,5 @@
+﻿answerability_accuracy,answerable_non_abstentions,average_expected_page_recall,citation_consistency,correct_unanswerable_abstentions,embedding_model,failed_responses,model,successful_responses,system,top_k,total_questions
+0.96,29/30,0.644,20/30,19/20,,0,,50,Dense baseline,,50
+0.98,30/30,0.844,25/31,19/20,,0,,50,Previous hybrid,,50
+0.72,18/30,0.844,20/20,18/20,,0,,50,Verified hybrid,,50
+0.84,23/30,0.844,24/24,19/20,sentence-transformers/all-MiniLM-L6-v2,0,aya-expanse:8b,50,Balanced hybrid,4,50
