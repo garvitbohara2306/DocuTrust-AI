@@ -1,8 +1,16 @@
-﻿from pathlib import Path
+from pathlib import Path
 import json
 import urllib.request
 import urllib.error
 import numpy as np
+import sys
+from pathlib import Path as _Path
+
+PROJECT_ROOT = _Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.evaluation.verify_answer import verify_answer
 import faiss
 from sentence_transformers import SentenceTransformer
 
@@ -73,19 +81,19 @@ def retrieve(question, model, index, chunks):
 
     return results
 
+
 def generate_answer(question, retrieved_chunks):
     if not retrieved_chunks:
-        return "I could not find sufficient evidence in the document."
+        return "The document does not contain sufficient evidence."
 
-    evidence = []
+    import json
+    import urllib.request
+    import urllib.error
 
-    for chunk in retrieved_chunks:
-        evidence.append(
-            f"[Page {chunk['page_number']} | {chunk['chunk_id']}]\n"
-            f"{chunk['text']}"
-        )
-
-    context = "\n\n".join(evidence)
+    context = "\n\n".join(
+        f"[Page {c['page_number']} | {c['chunk_id']}]\n{c['text']}"
+        for c in retrieved_chunks
+    )
 
     payload = {
         "model": MODEL_NAME,
@@ -94,23 +102,26 @@ def generate_answer(question, retrieved_chunks):
             {
                 "role": "system",
                 "content": (
-                    "You are DocuTrust AI, a document-grounded assistant. "
-                    "Answer ONLY using the supplied document evidence. "
-                    "Never invent facts or use outside knowledge. "
-                    "If the evidence does not answer the question, say: "
-                    "'The provided document does not contain sufficient "
-                    "information to answer this question.' "
-                    "Cite the relevant page numbers using [Page N]. "
-                    "Keep the answer clear and concise."
+                    "You are DocuTrust AI, a strict document-grounded assistant. "
+                    "Follow these rules carefully:\n"
+                    "1. Answer only from the supplied document evidence.\n"
+                    "2. Never use outside knowledge or invent facts.\n"
+                    "3. Cite every factual claim with its supporting page, "
+                    "using exactly [Page N].\n"
+                    "4. Only cite a page if its supplied passage supports "
+                    "the specific claim.\n"
+                    "5. Do not combine unrelated evidence into one claim.\n"
+                    "6. Do not introduce standards, numbers, procedures, "
+                    "or examples unless the evidence explicitly supports them.\n"
+                    "7. If evidence is insufficient, clearly say so instead "
+                    "of guessing.\n"
+                    "8. Keep answers concise and easy to understand.\n"
+                    "9. Never invent page numbers or citations."
                 )
             },
             {
                 "role": "user",
-                "content": (
-                    f"DOCUMENT EVIDENCE:\n{context}\n\n"
-                    f"QUESTION:\n{question}\n\n"
-                    "Answer using the evidence and cite page numbers."
-                )
+                "content": f"Evidence:\n{context}\n\nQuestion: {question}"
             }
         ],
         "options": {
@@ -119,22 +130,27 @@ def generate_answer(question, retrieved_chunks):
         }
     }
 
-    data = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(
         OLLAMA_URL,
-        data=data,
+        data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
         method="POST"
     )
 
     try:
-        with urllib.request.urlopen(request, timeout=300) as response:
+        with urllib.request.urlopen(request, timeout=600) as response:
             result = json.loads(response.read().decode("utf-8"))
             return result["message"]["content"]
 
-    except urllib.error.URLError as error:
+    except urllib.error.HTTPError as error:
+        details = error.read().decode("utf-8", errors="replace")
         raise RuntimeError(
-            "Cannot connect to Ollama. Make sure Ollama is running."
+            f"Ollama HTTP {error.code}: {details}"
+        ) from error
+
+    except Exception as error:
+        raise RuntimeError(
+            f"Ollama request failed: {type(error).__name__}: {error}"
         ) from error
 
 def main():
@@ -173,9 +189,32 @@ def main():
                     f"{item['chunk_id']}"
                 )
 
-            print("\n--- AI GENERATED ANSWER ---\n")
             answer = generate_answer(question, retrieved)
+
+            print("\n--- GENERATED ANSWER (DRAFT) ---\n")
             print(answer)
+
+            print("\n--- EVIDENCE VERIFICATION ---")
+            verification = verify_answer(answer, retrieved)
+
+            print("Retrieved pages:", verification["retrieved_pages"])
+            print("Cited pages:", verification["cited_pages"])
+            print("Missing citation:", verification["missing_citation"])
+            print("Invalid citations:", verification["invalid_pages"])
+            print("Text overlap:", verification["text_overlap"])
+
+            # Verification gate
+            if not verification["citations_valid"]:
+                print("\nVERIFICATION GATE: UNVERIFIED")
+                print("Reason: Missing or invalid page citations.")
+                print("Do not present this answer as a verified answer.")
+
+            else:
+                print("\nVERIFICATION GATE: CITATION CHECK PASSED")
+                print("Warning: Citation consistency does not prove factual correctness.")
+                print("Claim-level evidence review is still required.")
+
+            print("Note:", verification["verification_note"])
             print("\n" + "-" * 60)
 
         except Exception as error:

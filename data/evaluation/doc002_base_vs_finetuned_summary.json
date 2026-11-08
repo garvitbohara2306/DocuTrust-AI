@@ -1,0 +1,22 @@
+{
+  "base": {
+    "model": "base",
+    "responses": 50,
+    "failures": 0,
+    "answerability_accuracy": 0.6,
+    "answerable_non_abstentions": "30/30",
+    "unanswerable_correct_abstentions": "0/20",
+    "citation_consistency": "1/50",
+    "average_expected_page_recall": 0.644
+  },
+  "finetuned": {
+    "model": "finetuned",
+    "responses": 50,
+    "failures": 0,
+    "answerability_accuracy": 0.6,
+    "answerable_non_abstentions": "30/30",
+    "unanswerable_correct_abstentions": "0/20",
+    "citation_consistency": "0/50",
+    "average_expected_page_recall": 0.644
+  }
+}

@@ -1,0 +1,31 @@
+﻿question_id,question,expected_pages,baseline_pages,baseline_hit,section_aware_pages,section_aware_hit,query_expansion_pages,query_expansion_hit
+DOC002_A01,What policy documents are mandatory for Indian government websites according to the preface?,[7],"[7, 15]",True,"[7, 15]",True,"[7, 15]",True
+DOC002_A02,What percentage of documents were found to be accessible during the research?,[7],"[4, 24, 42, 45]",False,"[4, 24, 42, 45]",False,"[5, 6, 7, 30]",True
+DOC002_A03,Name two reasons given for the low availability of accessible documents.,[7],"[6, 7, 32]",True,"[6, 7, 32]",True,"[6, 7, 32]",True
+DOC002_A04,Who is the intended audience of the document?,[10],"[4, 7, 8, 23]",False,"[4, 7, 8, 23]",False,"[7, 8, 11]",False
+DOC002_A05,What prerequisite software skills are listed?,[10],"[4, 10, 15, 66]",True,"[4, 10, 15, 66]",True,"[4, 10, 15, 66]",True
+DOC002_A06,Which software versions did NIC use while preparing the document?,[10],"[1, 2, 15, 52]",False,"[1, 2, 15, 52]",False,"[15, 27, 30, 40]",False
+DOC002_A07,What does WCAG 2.0 cover?,[10],"[10, 14, 68]",True,"[10, 14, 68]",True,"[10, 14, 68]",True
+DOC002_A08,What is an accessible PDF according to section 1.2?,[14],"[8, 14, 22, 39]",True,"[4, 14, 22, 39]",True,"[8, 14, 22, 39]",True
+DOC002_A09,Which two accessibility standards are listed in section 1.3?,[14],"[21, 29, 42, 45]",False,"[14, 21, 42, 45]",True,"[21, 29, 42, 45]",False
+DOC002_A10,What is a tagged PDF?,[14],"[12, 14, 18, 43]",True,"[12, 14, 18, 43]",True,"[12, 14, 18, 43]",True
+DOC002_A11,Why is meticulous tagging important?,"[12, 14]","[12, 17, 43]",True,"[12, 17, 43]",True,"[12, 17, 43]",True
+DOC002_A12,What is the purpose of alternate text for images?,[17],"[17, 31, 41]",True,"[17, 31, 41]",True,"[17, 31, 41]",True
+DOC002_A13,Do purely decorative images require a description?,[17],"[17, 18, 20]",True,"[17, 18, 20]",True,"[17, 18, 20]",True
+DOC002_A14,What makes hyperlink text meaningful for accessibility?,"[17, 19]","[11, 14, 17, 19]",True,"[11, 14, 17, 19]",True,"[11, 14, 17, 19]",True
+DOC002_A15,How should document language be identified?,[17],"[17, 18, 66]",True,"[17, 18, 66]",True,"[17, 18, 66]",True
+DOC002_A16,How does the document recommend using tables?,[17],"[4, 16, 17, 19]",True,"[4, 16, 17, 19]",True,"[4, 16, 17, 19]",True
+DOC002_A17,What must an Adobe PDF include to be accessible according to page 18?,[18],"[14, 22, 25, 37]",False,"[14, 22, 25, 37]",False,"[12, 18, 43]",True
+DOC002_A18,What problem can improper list formatting cause?,[18],"[16, 18, 19, 49]",True,"[16, 18, 19, 49]",True,"[16, 18, 19, 49]",True
+DOC002_A19,Why are skipped heading levels a problem?,[19],"[16, 19, 49]",True,"[16, 19, 49]",True,"[16, 19, 49]",True
+DOC002_A20,Why should floating objects not be used?,[19],"[7, 17, 19]",True,"[7, 17, 19]",True,"[7, 17, 19]",True
+DOC002_A21,How can a user check accessibility in MS Word 2010?,[20],"[10, 12, 21, 23]",False,"[10, 12, 21, 23]",False,"[10, 12, 18, 30]",False
+DOC002_A22,How does the document describe exporting a tagged PDF from LibreOffice?,[34],"[12, 14, 18, 43]",False,"[12, 14, 18, 43]",False,"[12, 18, 37, 43]",False
+DOC002_A23,What is AccessODF used for in LibreOffice?,[33],"[15, 32, 33]",True,"[15, 32, 33]",True,"[15, 32, 33]",True
+DOC002_A24,What is the purpose of Acrobat Pro Full Check?,"[34, 35]","[12, 37, 39, 41]",False,"[12, 37, 39, 41]",False,"[12, 23, 44, 49]",False
+DOC002_A25,What does PAC3 do?,[26],"[10, 12, 38, 52]",False,"[10, 12, 38, 52]",False,"[10, 26, 38, 40]",True
+DOC002_A26,What did PAC3 reveal about a PDF declared accessible by Acrobat 9 Pro?,[27],"[26, 27, 38, 39]",True,"[26, 27, 38, 39]",True,"[26, 27, 38, 39]",True
+DOC002_A27,What are the main steps for making a scanned PDF accessible?,"[41, 43, 44]","[12, 13, 15, 41]",True,"[12, 13, 15, 41]",True,"[12, 13, 15, 41]",True
+DOC002_A28,What is one limitation of Tesseract mentioned in the document?,"[13, 55]","[5, 53, 55]",True,"[5, 53, 55]",True,"[5, 53, 55]",True
+DOC002_A29,What image quality advice is given for better Tesseract OCR results?,[55],"[13, 53, 55]",True,"[13, 53, 55]",True,"[13, 53, 55]",True
+DOC002_A30,What did the report observe about OCR of Hindi and bilingual documents using FreeOCR?,[56],"[31, 55, 56, 57]",True,"[31, 55, 56, 57]",True,"[31, 55, 56, 57]",True

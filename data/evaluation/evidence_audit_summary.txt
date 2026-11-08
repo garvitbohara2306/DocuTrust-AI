@@ -1,0 +1,29 @@
+DOCUTRUST AI - MASTER EVIDENCE AUDIT
+==================================================
+
+Total questions: 50
+Document chunks: 111
+Questions needing review: 8
+
+CLASSIFICATION SUMMARY
+-----------------------------------
+LIKELY SUPPORTED - VERIFY: 23
+CORRECT ABSTENTION: 19
+MIXED RESPONSE - REVIEW: 4
+PARTIALLY SUPPORTED - REVIEW: 2
+MANUAL REVIEW - NO CLAIMS: 1
+RETRIEVAL FAILURE - ABSTENTION: 1
+
+RETRIEVAL SUMMARY
+-----------------------------------
+EXPECTED PAGE RETRIEVED: 21
+EXPECTED PAGE NOT RETRIEVED: 9
+UNANSWERABLE QUESTION: 20
+
+CITATION SUMMARY
+-----------------------------------
+VALID PAGE MEMBERSHIP: 21
+NO CITATION: 29
+
+IMPORTANT LIMITATION
+Lexical overlap is not semantic entailment. A high score does not prove factual correctness, and a low score does not prove hallucination. All flagged claims require evidence review.

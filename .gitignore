@@ -247,3 +247,5 @@ outputs/*
 checkpoints/
 wandb/
 .cache/
+.venv*/
+!models/docutrust-qwen-lora/adapter_model.safetensors
