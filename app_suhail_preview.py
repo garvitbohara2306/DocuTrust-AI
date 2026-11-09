@@ -11,6 +11,7 @@ import os
 import random
 import re
 import shutil
+import textwrap
 from collections import Counter
 from datetime import datetime
 
@@ -140,6 +141,7 @@ def ai_generate(task, passages, options):
             "Create clear, well-structured study notes from the evidence. Include a short summary, "
             "key points, important definitions and exam-focused takeaways where supported. "
             "Do not add facts outside the evidence. Add [Page N] citations to factual bullets. "
+            "Write the notes in " + str(options.get("language", "English")) + ". "
             "Exam-oriented mode: " + str(bool(options.get("exam", False)))
         ),
         "quiz": (
@@ -198,13 +200,34 @@ FONTS = {"Source Serif 4": "'Source Serif 4',Georgia,serif", "Figtree": "'Figtre
          "Atkinson Hyperlegible": "'Atkinson Hyperlegible',Verdana,sans-serif",
          "Noto Sans Devanagari": "'Noto Sans Devanagari','Figtree',sans-serif",
          "JetBrains Mono": "'JetBrains Mono',Consolas,monospace"}
-PAGES = ["dashboard", "workspace", "library", "reader", "search", "ask", "study", "listen", "settings"]
+
+# Broad language menu for user-selected learning output. Actual translation quality
+# depends on the connected local LLM and the language's model support.
+TRANSLATION_LANGUAGES = [
+    "English", "Hindi", "Hinglish", "Bengali", "Tamil", "Telugu", "Marathi", "Gujarati",
+    "Kannada", "Malayalam", "Punjabi", "Urdu", "Odia", "Assamese", "Sanskrit", "Nepali",
+    "Spanish", "French", "German", "Italian", "Portuguese", "Dutch", "Russian", "Ukrainian",
+    "Polish", "Czech", "Slovak", "Romanian", "Hungarian", "Greek", "Turkish", "Arabic",
+    "Hebrew", "Persian", "Pashto", "Chinese (Simplified)", "Chinese (Traditional)", "Japanese",
+    "Korean", "Thai", "Vietnamese", "Indonesian", "Malay", "Filipino", "Burmese", "Khmer",
+    "Lao", "Mongolian", "Kazakh", "Uzbek", "Swahili", "Amharic", "Somali", "Yoruba",
+    "Igbo", "Hausa", "Zulu", "Afrikaans", "Xhosa", "Irish", "Welsh", "Scottish Gaelic",
+    "Icelandic", "Norwegian", "Swedish", "Danish", "Finnish", "Estonian", "Latvian",
+    "Lithuanian", "Bulgarian", "Serbian", "Croatian", "Bosnian", "Slovenian", "Albanian",
+    "Macedonian", "Armenian", "Georgian", "Azerbaijani", "Kyrgyz", "Tajik", "Turkmen",
+    "Kurdish", "Sindhi", "Kashmiri", "Dogri", "Maithili", "Konkani", "Manipuri", "Bodo",
+    "Santali", "Tibetan", "Uyghur", "Javanese", "Sundanese", "Catalan", "Basque", "Galician",
+    "Esperanto", "Latin", "Haitian Creole", "Luxembourgish", "Maltese", "Belarusian"
+]
+PAGES = ["dashboard", "workspace", "library", "reader", "search", "ask", "study", "listen",
+         "learning_studio", "settings"]
 ICONS = dict(dashboard="dashboard", workspace="upload_file", library="library_books", reader="menu_book",
-             search="search", ask="forum", study="school", listen="headphones", settings="tune")
+             search="search", ask="forum", study="school", listen="headphones",
+             learning_studio="auto_awesome", settings="tune")
 
 EN = dict(
     dashboard="Dashboard", workspace="PDF Workspace", library="Library", reader="Reader", search="Smart Search",
-    ask="Ask AI", study="Study Tools", listen="Listen", settings="Settings",
+    ask="Ask AI", study="Study Tools", listen="Listen", learning_studio="Learning Studio", settings="Settings",
     docs="Documents", pages="Pages processed", chunks="Chunks", ocr_pages="OCR pages", recent="Recent documents",
     status="Processing status", no_docs="No documents yet. Upload PDFs in PDF Workspace to get started.",
     upload="Upload PDFs", process="Process PDFs", theme="Theme", language="Language", font_size="Font size (px)",
@@ -223,7 +246,8 @@ EN = dict(
 )
 HI = dict(
     dashboard="डैशबोर्ड", workspace="पीडीएफ वर्कस्पेस", library="लाइब्रेरी", reader="रीडर", search="स्मार्ट खोज",
-    ask="एआई से पूछें", study="अध्ययन टूल्स", listen="सुनें", settings="सेटिंग्स", docs="दस्तावेज़",
+    ask="एआई से पूछें", study="अध्ययन टूल्स", listen="सुनें", learning_studio="लर्निंग स्टूडियो",
+    settings="सेटिंग्स", docs="दस्तावेज़",
     pages="प्रोसेस हुए पेज", chunks="चंक्स", ocr_pages="ओसीआर पेज", recent="हाल के दस्तावेज़", status="प्रोसेसिंग स्थिति",
     no_docs="अभी कोई दस्तावेज़ नहीं है। शुरू करने के लिए पीडीएफ वर्कस्पेस में PDF अपलोड करें।",
     upload="PDF अपलोड करें", process="PDF प्रोसेस करें", theme="थीम", language="भाषा", font_size="फ़ॉन्ट आकार (px)",
@@ -252,7 +276,7 @@ def t(k):
     return (HI if S.get("lang") == "हिन्दी" else EN).get(k) or EN.get(k, k)
 
 
-DEFAULTS = dict(theme="Midnight Dark", lang="English", font_size=17, font_family="Source Serif 4", line_height=1.7,
+DEFAULTS = dict(theme="Midnight Dark", lang="English", content_language="English", font_size=17, font_family="Source Serif 4", line_height=1.7,
                 read_width=720, comfy=False, focus=False, docs={}, nav="dashboard", chat=[], quiz=None, fc=None,
                 fc_idx=0, fc_status={}, notes_out=None, ocr_on=True, ocr_lang="eng", dpi=200, chunk_size=900,
                 overlap=120, rd_doc=None, rd_page=1, last_run=[])
@@ -903,6 +927,27 @@ def page_library():
     st.caption("Documents live in this browser session only; they are cleared when you close or refresh the tab.")
 
 
+def translate_learning_text(text, target_language):
+    """Translate user-selected learning text through the existing local QA model."""
+    text = str(text or "").strip()
+    if not text:
+        raise ValueError("There is no readable text to translate on this page.")
+    if target_language == "Hinglish":
+        style = "natural conversational Hinglish (Hindi written in Roman script, retaining useful English technical terms)"
+    else:
+        style = target_language
+    qa = _get_qa_pipeline()
+    result = qa._ollama_chat([
+        {"role": "system", "content": (
+            "You are a careful document translator. Translate faithfully into the requested language. "
+            "Preserve headings, lists, names, numbers, formulas, code and technical terms. "
+            "Do not summarize, add facts, or omit content. Return only the translation."
+        )},
+        {"role": "user", "content": f"Target language: {style}\n\nTEXT TO TRANSLATE:\n{text}"},
+    ], num_predict=min(1800, max(400, len(text)//2)))
+    return str(result).strip()
+
+
 def page_reader():
     if need_docs():
         return
@@ -934,9 +979,35 @@ def page_reader():
         pw(st.slider, t("page"), "rd_page", 1, min_value=1, max_value=n)
     p = d["pages"][S.rd_page - 1]
     st.caption(f"{t('page')} {p['page']}/{n} · {p['method']} · {p['words']} words")
-    body = "".join(f"<p>{esc(x.strip()).replace(chr(10), ' ')}</p>" for x in re.split(r"\n\s*\n", p["text"]) if x.strip())
-    st.markdown(f"<div class='reader'>{body or '<p class=dt-muted>No text on this page (scanned page? enable OCR in PDF Workspace).</p>'}</div>",
-                unsafe_allow_html=True)
+    original_text = p.get("text", "")
+    target_lang = pw(st.selectbox, "Learning / translation language", "rd_target_language",
+                      S.get("content_language", "English"), options=TRANSLATION_LANGUAGES)
+    view_mode = st.radio("Reader view", ["Original", "Translated", "Side by side"],
+                         horizontal=True, key="rd_translation_view")
+    if view_mode == "Original":
+        body = "".join(f"<p>{esc(x.strip()).replace(chr(10), ' ')}</p>" for x in re.split(r"\n\s*\n", original_text) if x.strip())
+        st.markdown(f"<div class='reader'>{body or '<p class=dt-muted>No text on this page (scanned page? enable OCR in PDF Workspace).</p>'}</div>", unsafe_allow_html=True)
+    else:
+        cache_key = f"rd_translation_{S.rd_doc}_{S.rd_page}_{target_lang}"
+        if st.button(f"Translate this page to {target_lang}", key="rd_translate_page", type="primary"):
+            try:
+                with st.spinner(f"Translating page into {target_lang}..."):
+                    S[cache_key] = translate_learning_text(original_text, target_lang)
+            except Exception as exc:
+                st.error(f"Translation failed: {exc}")
+        translated = S.get(cache_key, "")
+        if not translated:
+            st.info("Select a language and click Translate this page. Translation uses the configured local AI model.")
+        elif view_mode == "Translated":
+            st.markdown(f"<div class='reader'>{''.join(f'<p>{esc(x)}</p>' for x in translated.splitlines() if x.strip())}</div>", unsafe_allow_html=True)
+        else:
+            left, right = st.columns(2)
+            with left:
+                st.markdown("**Original**")
+                st.markdown(f"<div class='reader'>{''.join(f'<p>{esc(x.strip())}</p>' for x in original_text.splitlines() if x.strip())}</div>", unsafe_allow_html=True)
+            with right:
+                st.markdown(f"**{target_lang}**")
+                st.markdown(f"<div class='reader'>{''.join(f'<p>{esc(x)}</p>' for x in translated.splitlines() if x.strip())}</div>", unsafe_allow_html=True)
 
 
 def snippet(text, terms, width=240):
@@ -983,6 +1054,14 @@ def page_search():
 
 def page_ask():
     st.caption("Ask questions across your processed PDFs. Answers are grounded in retrieved passages and include page citations.")
+    if S.docs and not S.chat:
+        st.markdown("#### Try asking")
+        c1,c2,c3=st.columns(3)
+        for col,label,question in [(c1,"Summarize documents","Summarize the main points of my uploaded documents."),(c2,"Key findings","What are the most important findings in these documents?"),(c3,"Important dates","List the important dates and deadlines mentioned in my documents.")]:
+            with col:
+                if st.button(label,key="ask_suggest_"+label):
+                    S["pending_question"]=question
+                    st.rerun()
     if S.chat:
         st.button(t("clear"), key="chat_clear", on_click=lambda: S.__setitem__("chat", []), icon=":material/delete:")
     for mi, m in enumerate(S.chat):
@@ -992,13 +1071,15 @@ def page_ask():
                 with st.expander(f"{ps['doc']} · {t('page')} {ps['page']}", expanded=pi == 0):
                     st.code(ps["text"], language=None, wrap_lines=True)
     q = st.chat_input(t("ask_ph"), key="chat_in", disabled=not S.docs)
+    q = S.pop("pending_question", None) or q
     if not S.docs:
         st.info(t("no_docs"))
     if q:
         S.chat.append(dict(role="user", content=q))
         ps = keyword_retrieve(q)
         try:
-            answer = ai_generate("answer", ps, {"question": q})
+            with st.spinner("Searching your documents and generating an answer..."):
+                answer = ai_generate("answer", ps, {"question": q})
             S.chat.append(dict(role="assistant", content=answer, passages=ps))
         except Exception as e:
             S.chat.append(dict(role="assistant", content=f"AI backend error: {e}", passages=ps))
@@ -1143,7 +1224,7 @@ def page_listen():
     with c2:
         pg = pw(st.number_input, t("page"), "ls_page", 1, min_value=1, max_value=d["page_count"], step=1)
     with c3:
-        lang = pw(st.selectbox, t("language"), "ls_lang", "en-US", options=["en-US", "hi-IN", "en-IN"])
+        lang = pw(st.selectbox, "Speech language", "ls_lang", "en-US", options=["en-US", "hi-IN", "en-IN", "bn-IN", "ta-IN", "te-IN", "mr-IN", "gu-IN", "kn-IN", "ml-IN", "pa-IN", "ur-IN", "es-ES", "fr-FR", "de-DE", "it-IT", "pt-PT", "ru-RU", "ja-JP", "ko-KR", "zh-CN", "ar-SA"])
     rate = pw(st.select_slider, t("speed"), "ls_rate", 1.0, options=[0.5, 0.75, 1.0, 1.25, 1.5, 2.0])
     pg = max(1, min(int(pg), d["page_count"]))
     full = d["pages"][pg - 1]["text"]
@@ -1164,7 +1245,9 @@ def page_settings():
     with a:
         st.subheader(t("appearance"))
         pw(st.selectbox, t("theme"), "theme", "Midnight Dark", options=list(THEMES))
-        pw(st.selectbox, t("language"), "lang", "English", options=["English", "हिन्दी"])
+        pw(st.selectbox, "Website interface language", "lang", "English", options=["English", "हिन्दी"])
+        pw(st.selectbox, "Default learning / translation language", "content_language", "English", options=TRANSLATION_LANGUAGES)
+        st.caption("This preference is used by Reader and learning tools. Actual language quality depends on the configured AI model.")
         st.subheader(t("shortcuts"))
         shortcut_table()
     with b:
@@ -1189,8 +1272,280 @@ def page_settings():
                 unsafe_allow_html=True)
 
 
+
+def _learning_notes_pdf(title, body):
+    """Create a simple text-based PDF using the existing PyMuPDF dependency."""
+    if pymupdf is None:
+        raise RuntimeError("PDF export requires PyMuPDF. Install it with: pip install pymupdf")
+    pdf = pymupdf.open()
+    page = pdf.new_page(width=595, height=842)
+    y = 52
+    page.insert_text((48, y), title[:90], fontsize=17, fontname="helv")
+    y += 32
+    for raw_line in str(body).splitlines():
+        line = raw_line.strip()
+        if not line:
+            y += 9
+            continue
+        wrapped = textwrap.wrap(line, width=88) or [""]
+        for part in wrapped:
+            if y > 790:
+                page = pdf.new_page(width=595, height=842)
+                y = 52
+            page.insert_text((48, y), part[:110], fontsize=9.5, fontname="helv")
+            y += 15
+    data = pdf.tobytes()
+    pdf.close()
+    return data
+
+
+def _video_transcribe(video_bytes, suffix):
+    """Transcribe a video with the optional open-source Whisper package."""
+    try:
+        import whisper
+    except ImportError as exc:
+        raise RuntimeError(
+            "Video transcription is not installed yet. In your project terminal run: "
+            "pip install openai-whisper. FFmpeg must also be installed and available on PATH."
+        ) from exc
+
+    import tempfile
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp:
+            temp.write(video_bytes)
+            temp_path = temp.name
+        model_name = S.get("ls_whisper_model", "base")
+        model = whisper.load_model(model_name)
+        result = model.transcribe(temp_path, fp16=False)
+        return result.get("text", "").strip(), result.get("segments", [])
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.unlink(temp_path)
+
+
+def page_learning_studio():
+    st.markdown(
+        "<div class='dt-hero'><h3>🎓 AI Learning Studio</h3>"
+        "<span>Turn your study PDFs and lecture videos into notes and visual learning material.</span></div>",
+        unsafe_allow_html=True,
+    )
+
+    language = st.selectbox(
+        "Explanation language", TRANSLATION_LANGUAGES, index=TRANSLATION_LANGUAGES.index(S.get("content_language", "English")) if S.get("content_language", "English") in TRANSLATION_LANGUAGES else 0, key="ls_language"
+    )
+    source_mode = st.radio(
+        "Choose your source", ["📄 PDF Learning", "🎬 Video Learning"],
+        horizontal=True, key="ls_source_mode",
+    )
+
+    if source_mode == "📄 PDF Learning":
+        st.subheader("PDF → Concepts → Visual Learning")
+        upload = st.file_uploader(
+            "Upload a PDF to add it to your DocuTrust library",
+            type=["pdf"], key="ls_pdf_upload",
+        )
+        if upload is not None:
+            if pymupdf is None:
+                st.error("PyMuPDF is not installed. Run: pip install pymupdf")
+            elif st.button("Process PDF for Learning Studio", key="ls_process_pdf", type="primary"):
+                cfg = dict(
+                    ocr_on=S.ocr_on, ocr_lang=S.ocr_lang, dpi=S.dpi,
+                    chunk_size=S.chunk_size, overlap=S.overlap,
+                )
+                try:
+                    data = upload.getvalue()
+                    doc = process_pdf(upload.name, data, cfg, lambda i, n: None)
+                    doc["cfg"] = cfg
+                    S.docs[doc["id"]] = doc
+                    S["ls_selected_doc"] = doc["id"]
+                    st.success(f"Processed {doc['name']} — {doc['page_count']} pages.")
+                except Exception as exc:
+                    st.error(f"Could not process PDF: {exc}")
+
+        if not S.docs:
+            st.info("Upload and process a PDF above, or process one in PDF Workspace first.")
+        else:
+            ids = list(S.docs)
+            selected_id = st.selectbox(
+                "Choose a processed document", ids,
+                format_func=lambda did: S.docs[did]["name"],
+                key="ls_selected_doc",
+            )
+            doc = S.docs[selected_id]
+            st.caption(f"{doc['page_count']} pages · {len(doc['chunks'])} text chunks · {doc['status']}")
+
+            c1, c2 = st.columns([2, 1])
+            with c1:
+                concept = st.text_input(
+                    "Concept to understand (optional)",
+                    placeholder="e.g. linked list insertion, deadlock, inheritance",
+                    key="ls_pdf_concept",
+                )
+            with c2:
+                exam_mode = st.toggle("Exam-focused notes", value=True, key="ls_exam_mode")
+
+            tab_explain, tab_diagram, tab_animation, tab_notes = st.tabs(
+                ["🧠 Explanation", "🔷 Diagram", "🎞️ Animation", "📚 Notes PDF"]
+            )
+
+            with tab_explain:
+                if st.button("Generate explanation from this PDF", key="ls_pdf_explain", type="primary"):
+                    try:
+                        prompt = concept.strip() or "Explain the main concepts in this document"
+                        with st.spinner("Retrieving relevant PDF evidence and generating notes..."):
+                            answer = ai_generate(
+                                "answer", [], {"question": prompt + f". Explain in {language}."}
+                            )
+                        S["ls_pdf_answer"] = answer
+                    except Exception as exc:
+                        st.error(f"Could not generate explanation: {exc}")
+                if S.get("ls_pdf_answer"):
+                    st.markdown(S["ls_pdf_answer"])
+
+            with tab_diagram:
+                st.markdown("**Document-derived keyword map**")
+                page_text = "\n".join(p.get("text", "") for p in doc.get("pages", []))
+                tokens = [w for w in words(page_text) if w not in STOP and len(w) > 3]
+                common = [w for w, _ in Counter(tokens).most_common(6)]
+                if common:
+                    nodes = "; ".join(f'"{esc(w)}"' for w in common)
+                    edges = "\n".join(
+                        f'"{esc(common[i])}" -> "{esc(common[i+1])}";'
+                        for i in range(len(common) - 1)
+                    )
+                    graph = "digraph Concepts { rankdir=LR; node [shape=box, style=rounded]; " + nodes + "; " + edges + " }"
+                    st.graphviz_chart(graph)
+                    st.caption("This is a keyword relationship preview, not a verified semantic concept map.")
+                else:
+                    st.info("No readable text was extracted from this PDF. Check OCR settings in PDF Workspace.")
+
+            with tab_animation:
+                st.markdown("**Animated concept-flow preview**")
+                anim_terms = common[:3] if common else ["Source", "Concept", "Result"]
+                labels = [html.escape(x.title()) for x in anim_terms]
+                while len(labels) < 3:
+                    labels.append(f"Step {len(labels)+1}")
+                components.html(
+                    """<style>
+                    body{margin:0;font-family:system-ui;color:#eaf0ff}
+                    .track{display:flex;align-items:center;justify-content:space-around;gap:8px;
+                    padding:24px 10px;background:#111a35;border:1px solid #34436d;border-radius:14px}
+                    .node{padding:14px 16px;border-radius:10px;background:#2456a6;color:white;font-weight:650;
+                    text-align:center;min-width:70px;animation:pulse 2.4s ease-in-out infinite}
+                    .node:nth-child(2){animation-delay:.45s}.node:nth-child(3){animation-delay:.9s}
+                    @keyframes pulse{0%,100%{transform:translateY(0);filter:brightness(.85)}
+                    50%{transform:translateY(-8px);filter:brightness(1.3)}}
+                    @media(prefers-reduced-motion:reduce){.node{animation:none}}
+                    </style><div class="track"><div class="node">__A__</div><span>→</span>
+                    <div class="node">__B__</div><span>→</span><div class="node">__C__</div></div>"""
+                    .replace("__A__", labels[0]).replace("__B__", labels[1]).replace("__C__", labels[2]),
+                    height=120,
+                )
+                st.caption("Motion preview uses extracted keywords. A full AI-generated step animation is a later integration.")
+
+            with tab_notes:
+                if st.button("Generate study notes", key="ls_pdf_notes", type="primary"):
+                    try:
+                        with st.spinner("Generating notes from retrieved PDF evidence..."):
+                            notes = ai_generate("notes", [], {"exam": exam_mode, "language": language})
+                        S["ls_pdf_notes_text"] = notes
+                    except Exception as exc:
+                        st.error(f"Could not generate notes: {exc}")
+                if S.get("ls_pdf_notes_text"):
+                    st.markdown(S["ls_pdf_notes_text"])
+                    try:
+                        notes_pdf = _learning_notes_pdf(
+                            f"Study Notes - {doc['name']}", S["ls_pdf_notes_text"]
+                        )
+                        st.download_button(
+                            "Download Study Notes PDF", notes_pdf,
+                            file_name=f"{os.path.splitext(doc['name'])[0]}_study_notes.pdf",
+                            mime="application/pdf", key="ls_pdf_notes_download",
+                        )
+                    except Exception as exc:
+                        st.warning(f"PDF export unavailable: {exc}")
+
+    else:
+        st.subheader("Video → Transcript → Lecture Notes")
+        video = st.file_uploader(
+            "Upload a lecture video", type=["mp4", "mov", "mkv", "webm", "mpeg", "mpg"],
+            key="ls_video_upload",
+        )
+        st.selectbox(
+            "Whisper model size", ["tiny", "base", "small", "medium"],
+            index=1, key="ls_whisper_model",
+            help="Larger models may be more accurate but require more RAM and processing time.",
+        )
+        if video is not None:
+            video_bytes = video.getvalue()
+            st.video(video_bytes)
+            st.caption(f"{video.name} · {len(video_bytes)/(1024*1024):.1f} MB")
+            if st.button("Transcribe video", key="ls_transcribe_video", type="primary"):
+                try:
+                    with st.spinner("Transcribing video. This may take a while..."):
+                        transcript, segments = _video_transcribe(
+                            video_bytes, os.path.splitext(video.name)[1] or ".mp4"
+                        )
+                    if not transcript:
+                        st.warning("No speech transcript was returned for this video.")
+                    else:
+                        S["ls_video_transcript"] = transcript
+                        S["ls_video_segments"] = segments
+                        S["ls_video_name"] = video.name
+                        st.success("Video transcription completed.")
+                except Exception as exc:
+                    st.error(str(exc))
+
+        transcript = S.get("ls_video_transcript", "")
+        if transcript:
+            st.markdown("### Transcript")
+            edited = st.text_area(
+                "Review or edit the transcript", value=transcript,
+                height=260, key="ls_video_transcript_edit",
+            )
+            S["ls_video_transcript_final"] = edited
+            st.download_button(
+                "Download transcript (.txt)", edited,
+                file_name=f"{os.path.splitext(S.get('ls_video_name','lecture'))[0]}_transcript.txt",
+                mime="text/plain", key="ls_video_transcript_download",
+            )
+            st.markdown("### Lecture notes")
+            if st.button("Prepare notes from transcript", key="ls_video_notes"):
+                S["ls_video_notes_text"] = (
+                    f"# Lecture Notes: {S.get('ls_video_name', 'Video')}\n\n"
+                    f"## Language selected: {language}\n\n"
+                    "## Transcript-based key content\n\n" + edited
+                )
+            if S.get("ls_video_notes_text"):
+                st.markdown(S["ls_video_notes_text"])
+                try:
+                    video_pdf = _learning_notes_pdf(
+                        f"Lecture Notes - {S.get('ls_video_name', 'Video')}",
+                        S["ls_video_notes_text"],
+                    )
+                    st.download_button(
+                        "Download Lecture Notes PDF", video_pdf,
+                        file_name=f"{os.path.splitext(S.get('ls_video_name','lecture'))[0]}_lecture_notes.pdf",
+                        mime="application/pdf", key="ls_video_notes_pdf",
+                    )
+                except Exception as exc:
+                    st.warning(f"PDF export unavailable: {exc}")
+        else:
+            st.info(
+                "Video transcription uses the optional open-source Whisper package. "
+                "Install `openai-whisper` and FFmpeg to enable it."
+            )
+
+    st.divider()
+    st.caption(
+        "Source-grounding: PDF explanations and AI notes use DocuTrust's existing retrieval pipeline. "
+        "Video notes are based on the generated transcript. Diagram and animation previews are illustrative."
+    )
+
 PAGE_FN = dict(dashboard=page_dashboard, workspace=page_workspace, library=page_library, reader=page_reader,
-               search=page_search, ask=page_ask, study=page_study, listen=page_listen, settings=page_settings)
+               search=page_search, ask=page_ask, study=page_study, listen=page_listen,
+               learning_studio=page_learning_studio, settings=page_settings)
 
 
 # ============================================================ LAYOUT
@@ -1367,8 +1722,3 @@ if auth_gate():
     except Exception as _err:
         st.error(f"Something went wrong on this page: {_err}")
     shortcuts_js()
-try:
-    PAGE_FN[S.nav]()
-except Exception as _err:
-    st.error(f"Something went wrong on this page: {_err}")
-shortcuts_js()
