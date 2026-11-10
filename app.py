@@ -1612,13 +1612,10 @@ def _pdf_video_slide(scene, index, total, animated=False, size=(1280, 720)):
 
 
 def _render_pdf_video(scenes, voice_language="English", animated=False):
-    """Render a narrated MP4 and keep the output outside temporary folders.
-
-    Keeping the MP4 in a normal project folder avoids Windows TemporaryDirectory
-    cleanup failures when FFmpeg still has a file handle open.
-    """
-    import pyttsx3
+    # Render a narrated MP4 using cloud-compatible Edge TTS voices.
+    import asyncio
     import uuid
+    import edge_tts
 
     try:
         from moviepy import ImageClip, AudioFileClip, concatenate_videoclips
@@ -1630,48 +1627,77 @@ def _render_pdf_video(scenes, voice_language="English", animated=False):
     if not scenes:
         raise RuntimeError("No readable PDF text was found to build a video lesson.")
 
+    prefixes_by_language = {
+        "english": ("en-",), "hindi": ("hi-",), "hinglish": ("hi-",),
+        "bengali": ("bn-",), "tamil": ("ta-",), "telugu": ("te-",),
+        "marathi": ("mr-",), "gujarati": ("gu-",), "kannada": ("kn-",),
+        "malayalam": ("ml-",), "punjabi": ("pa-",), "urdu": ("ur-",),
+        "spanish": ("es-",), "french": ("fr-",), "german": ("de-",),
+        "italian": ("it-",), "portuguese": ("pt-",), "dutch": ("nl-",),
+        "russian": ("ru-",), "ukrainian": ("uk-",), "polish": ("pl-",),
+        "czech": ("cs-",), "slovak": ("sk-",), "romanian": ("ro-",),
+        "hungarian": ("hu-",), "greek": ("el-",), "turkish": ("tr-",),
+        "arabic": ("ar-",), "hebrew": ("he-",), "persian": ("fa-",),
+        "chinese (simplified)": ("zh-CN", "zh-SG"),
+        "chinese (traditional)": ("zh-TW", "zh-HK"),
+        "japanese": ("ja-",), "korean": ("ko-",), "thai": ("th-",),
+        "vietnamese": ("vi-",), "indonesian": ("id-",), "malay": ("ms-",),
+        "filipino": ("fil-",), "swahili": ("sw-",), "afrikaans": ("af-",),
+        "irish": ("ga-",), "welsh": ("cy-",), "norwegian": ("nb-", "nn-"),
+        "swedish": ("sv-",), "danish": ("da-",), "finnish": ("fi-",),
+        "estonian": ("et-",), "latvian": ("lv-",), "lithuanian": ("lt-",),
+        "bulgarian": ("bg-",), "serbian": ("sr-",), "croatian": ("hr-",),
+        "bosnian": ("bs-",), "slovenian": ("sl-",), "albanian": ("sq-",),
+        "macedonian": ("mk-",), "armenian": ("hy-",), "georgian": ("ka-",),
+        "azerbaijani": ("az-",), "kazakh": ("kk-",), "uzbek": ("uz-",),
+        "yoruba": ("yo-",), "igbo": ("ig-",), "hausa": ("ha-",),
+        "zulu": ("zu-",), "xhosa": ("xh-",), "catalan": ("ca-",),
+        "basque": ("eu-",), "galician": ("gl-",), "haitian creole": ("ht-",),
+        "maltese": ("mt-",), "belarusian": ("be-",),
+    }
+
     output_dir = os.path.join(os.getcwd(), "generated_videos", uuid.uuid4().hex[:10])
     os.makedirs(output_dir, exist_ok=True)
-    wav_path = os.path.join(output_dir, "narration.wav")
+    audio_path = os.path.join(output_dir, "narration.mp3")
     mp4_path = os.path.join(output_dir, "lesson.mp4")
-
-    engine = None
-    audio = None
-    video = None
+    audio = video = None
     clips = []
 
     try:
-        script = "\n\n".join(scene["narration"] for scene in scenes)
+        script = "\n\n".join(str(scene.get("narration", "")).strip() for scene in scenes)
+        if not script.strip():
+            raise RuntimeError("The PDF storyboard contains no narration text.")
 
-        engine = pyttsx3.init()
-        wanted = str(voice_language).lower().split(" (")[0]
-        try:
-            voices = engine.getProperty("voices")
-            match = next(
-                (v for v in voices
-                 if wanted in (str(v.name) + " " + str(v.id) + " " + str(v.languages)).lower()),
-                None,
-            )
-            if match:
-                engine.setProperty("voice", match.id)
-        except Exception:
-            pass
-
-        engine.setProperty("rate", 165)
-        engine.save_to_file(script, wav_path)
-        engine.runAndWait()
-        engine.stop()
-        engine = None
-
-        if not os.path.isfile(wav_path) or os.path.getsize(wav_path) < 1000:
+        requested = str(voice_language or "English").strip().lower()
+        prefixes = prefixes_by_language.get(requested)
+        if not prefixes:
             raise RuntimeError(
-                "System text-to-speech did not create narration audio. "
-                "Check installed Windows speech voices."
+                f"No voice mapping is configured for {voice_language}. Choose another language."
             )
 
-        audio = AudioFileClip(wav_path)
-        per_scene = max(0.5, audio.duration / len(scenes))
+        voices = asyncio.run(edge_tts.list_voices())
+        matching = [
+            v for v in voices
+            if any(str(v.get("Locale", "")).lower().startswith(p.lower()) for p in prefixes)
+        ]
+        if not matching:
+            raise RuntimeError(
+                f"No online narration voice is currently available for {voice_language}. "
+                "Please choose another language."
+            )
+        selected = next(
+            (v for v in matching if "Neural" in str(v.get("Name", ""))),
+            matching[0],
+        )
+        asyncio.run(edge_tts.Communicate(
+            text=script, voice=selected["ShortName"], rate="+0%", volume="+0%"
+        ).save(audio_path))
 
+        if not os.path.isfile(audio_path) or os.path.getsize(audio_path) < 1000:
+            raise RuntimeError("Edge TTS did not create a valid narration audio file.")
+
+        audio = AudioFileClip(audio_path)
+        per_scene = max(0.5, audio.duration / len(scenes))
         for i, scene in enumerate(scenes):
             image = _pdf_video_slide(scene, i, len(scenes), animated=animated)
             image_path = os.path.join(output_dir, f"scene_{i:02d}.png")
@@ -1682,7 +1708,6 @@ def _render_pdf_video(scenes, voice_language="English", animated=False):
 
             clip = ImageClip(image_path)
             clip = clip.with_duration(per_scene) if moviepy_v2 else clip.set_duration(per_scene)
-
             if animated:
                 if moviepy_v2:
                     clip = clip.resized(
@@ -1692,51 +1717,36 @@ def _render_pdf_video(scenes, voice_language="English", animated=False):
                     clip = clip.resize(
                         lambda t_: 1.0 + 0.025 * min(1.0, t_ / max(per_scene, 0.1))
                     ).set_position("center")
-
             clips.append(clip)
 
         video = concatenate_videoclips(clips, method="compose")
         video = (
             video.with_audio(audio).with_duration(audio.duration)
-            if moviepy_v2
-            else video.set_audio(audio).set_duration(audio.duration)
+            if moviepy_v2 else video.set_audio(audio).set_duration(audio.duration)
         )
-
-        video.write_videofile(mp4_path, fps=24, codec="libx264", audio_codec="aac", logger="bar")
-
+        video.write_videofile(
+            mp4_path, fps=24, codec="libx264", audio_codec="aac", logger="bar"
+        )
         if not os.path.isfile(mp4_path) or os.path.getsize(mp4_path) == 0:
             raise RuntimeError("FFmpeg finished without creating a valid MP4.")
-
-        with open(mp4_path, "rb") as f:
-            result = f.read()
-
-        return result
-
+        with open(mp4_path, "rb") as handle:
+            return handle.read()
     finally:
         if video is not None:
             try:
                 video.close()
             except Exception:
                 pass
-
         for clip in clips:
             try:
                 clip.close()
             except Exception:
                 pass
-
         if audio is not None:
             try:
                 audio.close()
             except Exception:
                 pass
-
-        if engine is not None:
-            try:
-                engine.stop()
-            except Exception:
-                pass
-
 
 def page_learning_studio():
     st.markdown(
@@ -1894,8 +1904,16 @@ def page_learning_studio():
                 )
                 video_voice = st.selectbox(
                     "Narration voice language",
-                    ["English", "Hindi", "German", "French", "Spanish", "Italian"],
+                    TRANSLATION_LANGUAGES,
+                    index=(
+                        TRANSLATION_LANGUAGES.index(language)
+                        if language in TRANSLATION_LANGUAGES else 0
+                    ),
                     key="ls_pdf_video_voice",
+                    help=(
+                        "Choose a narration language. Voice availability depends on "
+                        "the speech provider; unsupported languages will be reported."
+                    ),
                 )
                 video_motion = st.checkbox(
                     "Add gentle slide motion", value=True, key="ls_pdf_video_motion"
@@ -1931,8 +1949,8 @@ def page_learning_studio():
                     except Exception as exc:
                         st.error(f"Could not create the video: {exc}")
                         st.info(
-                            "Check that MoviePy, pyttsx3 and FFmpeg are installed. "
-                            "On Windows, also check that a system speech voice is available."
+                            "Video narration uses Edge TTS and MoviePy. Check your internet "
+                            "connection and whether the selected language has an available voice."
                         )
 
                 saved_video = S.get("ls_pdf_video_bytes")
