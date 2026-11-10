@@ -6,3 +6,6 @@ sentence-transformers>=3.0
 transformers>=4.45
 peft>=0.13
 accelerate>=1.0
+Pillow>=10.0
+pandas>=2.0
+pytesseract>=0.3.10

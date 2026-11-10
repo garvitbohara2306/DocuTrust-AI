@@ -249,3 +249,6 @@ wandb/
 .cache/
 .venv*/
 !models/docutrust-qwen-lora/adapter_model.safetensors
+
+# Local deployment safety backups
+*.before_groq

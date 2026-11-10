@@ -15,6 +15,7 @@ that every generated claim is semantically entailed by the evidence.
 from __future__ import annotations
 
 import json
+import os
 import urllib.error
 import urllib.request
 from typing import Any
@@ -39,6 +40,16 @@ class DocumentQAPipeline:
     ) -> None:
         self.ollama_model = ollama_model
         self.ollama_url = ollama_url
+        self.groq_api_key = os.getenv("GROQ_API_KEY", "").strip()
+        self.groq_model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b").strip()
+        if not self.groq_api_key:
+            try:
+                import streamlit as st
+                self.groq_api_key = str(st.secrets.get("GROQ_API_KEY", "")).strip()
+                self.groq_model = str(st.secrets.get("GROQ_MODEL", self.groq_model)).strip()
+            except Exception:
+                pass
+        self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
         self.top_k = top_k
         self.embedding_model = embedding_model or SentenceTransformer(
             embedding_model_name
@@ -119,39 +130,59 @@ class DocumentQAPipeline:
         messages: list[dict[str, str]],
         num_predict: int = 350,
     ) -> str:
-        """Send a non-streaming chat request to Ollama."""
-        payload = {
-            "model": self.ollama_model,
-            "stream": False,
-            "messages": messages,
-            "options": {
+        # Use Groq when GROQ_API_KEY is configured; otherwise use local Ollama.
+        if self.groq_api_key:
+            payload = {
+                "model": self.groq_model,
+                "stream": False,
+                "messages": messages,
                 "temperature": 0.1,
-                "num_predict": num_predict,
-            },
-        }
-
-        request = urllib.request.Request(
-            self.ollama_url,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
+                "max_completion_tokens": max(num_predict, 1024),
+                "reasoning_effort": "low",
+            }
+            request = urllib.request.Request(
+                self.groq_url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.groq_api_key}",
+                    "User-Agent": "DocuTrustAI/1.0",
+                },
+                method="POST",
+            )
+            provider_name = "Groq"
+        else:
+            payload = {
+                "model": self.ollama_model,
+                "stream": False,
+                "messages": messages,
+                "options": {
+                    "temperature": 0.1,
+                    "num_predict": num_predict,
+                },
+            }
+            request = urllib.request.Request(
+                self.ollama_url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            provider_name = "Ollama"
 
         try:
-            with urllib.request.urlopen(request, timeout=600) as response:
+            with urllib.request.urlopen(request, timeout=180) as response:
                 result = json.loads(response.read().decode("utf-8"))
-
+            if provider_name == "Groq":
+                return result["choices"][0]["message"]["content"].strip()
             return result["message"]["content"].strip()
-
         except urllib.error.HTTPError as exc:
             details = exc.read().decode("utf-8", errors="replace")
             raise RuntimeError(
-                f"Ollama HTTP {exc.code}: {details}"
+                f"{provider_name} HTTP {exc.code}: {details}"
             ) from exc
-
         except Exception as exc:
             raise RuntimeError(
-                f"Ollama request failed ({type(exc).__name__}): {exc}"
+                f"{provider_name} request failed ({type(exc).__name__}): {exc}"
             ) from exc
 
     @staticmethod
